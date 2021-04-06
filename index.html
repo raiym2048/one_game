@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/pixi.js"></script>
+
+</head>
+<body>
+
+    <script>
+        const app = new PIXI.Application({
+            width : window.innerWidth,
+            height : window.innerHeight,
+            backgroundColor : 0xffffff,
+            resolution : window.devicePixelRatio || 1,
+        });
+
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        document.body.appendChild(app.view);
+
+        var arrWord = ["ONE","OK","THREE","FOUR","RAIYMBEK","JAVASCRIPT"];
+        let rand = Math.floor(Math.random() * arrWord.length);
+        let n = arrWord[rand];
+        let counter = 0;
+
+
+        let word = n;
+        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVYWXYZ";
+        let letters = [];
+
+        function wordSet(c, x, y, v){
+
+            const block = PIXI.Sprite.from("images/block.png");
+            block.anchor.set(0.5);
+
+            let letter = new PIXI.Text(c)
+            letter.anchor.set(0.5);
+            letter.visible = v;
+            let container = new PIXI.Container();
+            container.addChild(block);
+            container.addChild(letter);
+            container.interactive = true;
+            container.x = x;
+            container.y = y;
+
+            return container;
+
+            //letter.visible = false;
+            //letter.on("pointerdown",function(){onClick(letter)});     
+            //container.interactive = true;
+
+            //app.stage.addChild(container);
+
+        }
+
+        // WORD
+        for(let i = 0;i < word.length;i++){
+                let letter = wordSet(word[i],
+                w / 2 + i * 70 - word.length / 2 * 70 ,
+                h / 2, false);
+                letters.push(letter);
+                
+                //letter.on("pointerdown", function (){onClick(letter)});
+                app.stage.addChild(letter);
+        }
+
+        
+
+        // KEYBOARD
+        for(let i = 0;i < alphabet.length;i++){
+            let element = alphabet[i];
+            console.log(element);
+
+            let letter = wordSet(alphabet[i],
+            w / 2 + 70 * (i % 7) - 7 / 2 * 70,
+            h - h / 3 + 70 * Math.floor(i / 7), true);
+                
+            letter.on("pointerdown", function (){onClick(letter)});
+            app.stage.addChild(letter);
+
+        }
+
+
+        //functions
+        
+        wordSet(word);
+
+        function onClick(letter){
+            //letter.visible = true;
+            for(let i = 0;i < letters.length;i++){
+                if(letters[i].getChildAt(1).text == letter.getChildAt(1).text){
+                    letters[i].getChildAt(1).visible = true;
+                    counter++;
+                    
+                }
+                if(counter == word.length){
+                        alert("winner")
+                }
+                    
+            }
+        }
+        
+        
+
+
+    </script>
+    
+</body>
+</html>
