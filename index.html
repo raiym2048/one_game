@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,34 +9,117 @@
     <script src="js/pixi.js"></script>
 
 </head>
+
 <body>
 
     <script>
+
         const app = new PIXI.Application({
-            width : window.innerWidth,
-            height : window.innerHeight,
-            backgroundColor : 0xffffff,
-            resolution : window.devicePixelRatio || 1,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            backgroundColor: 0xffffff,
+            resolution: window.devicePixelRatio || 1,
         });
 
         const w = window.innerWidth;
         const h = window.innerHeight;
         document.body.appendChild(app.view);
 
-        var arrWord = ["ONE","OK","THREE","FOUR","RAIYMBEK","JAVASCRIPT"];
+        //RANDOM WORDS
+
+        var arrWord = ["OLYA", "SATURN", "EIGHT", "MILK", "PYTHON", "ERDOGAN"];
+        var questions = ["Olya's mother has five daughters: Alina, Malina, Marta, Kira ... What is the name of the fifth?",
+            "what is the sixth planet from the sun?",
+            "How many toes do cats have on their hind legs?",
+            "What the calf drinks",
+            "the most popular programming language in 2020-2021",
+            "President of Turkey"];
+
         let rand = Math.floor(Math.random() * arrWord.length);
         let n = arrWord[rand];
-        let counter = 0;
+
+        let questionsText = new PIXI.Text(questions[rand]);
+        questionsText.anchor.set(0.5);
+
+        questionsText.x = w / 2;
+        questionsText.y = h - h + 280;
+
+        app.stage.addChild(questionsText);
+        console.log(questionsText);
+
+        // COUNTER TEXT
+
+        var counter = 0;
+        let text = new PIXI.Text("counter : " + counter);
+        text.x += 100;
+        text.y += 100;
+        app.stage.addChild(text);
+
+        // BUTTON TEXT
+        let pointerISDown = false;
+        let pointerIsOver = false;
+
+        const NORMAL = 0xaaAAcc;
+        const OVER = 0xFFAAAA;
+        const DOWN = 0xAAFFAA;
+
+        let button = new PIXI.Graphics();
+        button.beginFill(NORMAL);
+        button.lineStyle(2, 0xaaaa)
+        button.drawRoundedRect(w - 300, h - 100, 100, 100, 10);
+        button.endFill();
+        button.interactive = true;
+        button.buttonMode = true;
+
+        button.on("pointerup", doPointerUp);
+        button.on("pointerdown", doPointerDown);
+        button.on("pointerover", doPointerOver);
+        button.on("pointerout", doPointerOut);
+
+        let textButton = new PIXI.Text("Next");
+        textButton.x = w - 280;
+        textButton.y = h - 70;
+
+        // CONTAINER FOR BUTTON
+
+        let buttonContainer = new PIXI.Container();
+        buttonContainer.addChild(button);
+
+
+        buttonContainer.addChild(textButton);
+        app.stage.addChild(buttonContainer);
+
+
+        // CLICK COUNTER
+
+        let click = 0;
+        let clickText = new PIXI.Text("You  clicked " + click + " Time");
+        clickText.x = w - 400;
+        clickText.y = text.y;
+        app.stage.addChild(clickText);
+
 
 
         let word = n;
-        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVYWXYZ";
+        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         let letters = [];
+        let blocks = [];
 
-        function wordSet(c, x, y, v){
+        // KEYBOARD CONTAINERS
 
-            const block = PIXI.Sprite.from("images/block.png");
-            block.anchor.set(0.5);
+        function wordSet(c, x, y, v) {
+
+            let block = new PIXI.Graphics();
+            block.beginFill(NORMAL);
+            block.lineStyle(2, 0xffaaaa);
+            block.drawRoundedRect(-25, -25, 50, 50, 10);
+            block.endFill();
+            block.interactive = true;
+
+            block.on("pointerup", doPointerUp2);
+            block.on("pointerdown", doPointerDown2);
+            block.on("pointerover", doPointerOver);
+            block.on("pointerout", doPointerOut);
 
             let letter = new PIXI.Text(c)
             letter.anchor.set(0.5);
@@ -44,70 +128,102 @@
             container.addChild(block);
             container.addChild(letter);
             container.interactive = true;
+
+            container.buttonMode = true;
             container.x = x;
             container.y = y;
 
+
+
             return container;
-
-            //letter.visible = false;
-            //letter.on("pointerdown",function(){onClick(letter)});     
-            //container.interactive = true;
-
-            //app.stage.addChild(container);
-
         }
-
         // WORD
-        for(let i = 0;i < word.length;i++){
-                let letter = wordSet(word[i],
-                w / 2 + i * 70 - word.length / 2 * 70 ,
-                h / 2, false);
-                letters.push(letter);
-                
-                //letter.on("pointerdown", function (){onClick(letter)});
-                app.stage.addChild(letter);
+        for (let i = 0; i < word.length; i++) {
+            let letter = wordSet(word[i],
+                w / 2 + i * 70 - word.length / 2 * 70,
+                h / 2 - 100, false);
+            letters.push(letter);
+            app.stage.addChild(letter);
         }
-
-        
 
         // KEYBOARD
-        for(let i = 0;i < alphabet.length;i++){
+        for (let i = 0; i < alphabet.length; i++) {
             let element = alphabet[i];
-            console.log(element);
-
             let letter = wordSet(alphabet[i],
-            w / 2 + 70 * (i % 7) - 7 / 2 * 70,
-            h - h / 3 + 70 * Math.floor(i / 7), true);
-                
-            letter.on("pointerdown", function (){onClick(letter)});
+                w / 2 + 70 * (i % 7) - 7 / 2 * 70,
+                h - h / 2.5 + 70 * Math.floor(i / 7), true);
+
+            letter.on("pointerdown", function () { onClick(letter) });
             app.stage.addChild(letter);
 
         }
 
-
-        //functions
-        
         wordSet(word);
 
-        function onClick(letter){
-            //letter.visible = true;
-            for(let i = 0;i < letters.length;i++){
-                if(letters[i].getChildAt(1).text == letter.getChildAt(1).text){
+        function onClick(letter) {
+            click++;
+            clickText.text = "You clicked " + click + " Time";
+
+            for (let i = 0; i < letters.length; i++) {
+                if (letters[i].getChildAt(1).text == letter.getChildAt(1).text) {
                     letters[i].getChildAt(1).visible = true;
                     counter++;
-                    
+                    text.text = "counter : " + counter;
+
+                    console.log(counter);
+                    check();
                 }
-                if(counter == word.length){
-                        alert("winner")
-                }
-                    
             }
         }
-        
-        
+        // BUTTON FUNCTIONS
+        function doPointerDown() {
+            this.tint = DOWN;
+            window.location.replace(window.location.pathname + window.location.search + window.location.hash);
+        }
+        function doPointerUp() {
+            if (pointerIsOver) {
+                this.tint = OVER;
+            }
+            else {
+                this.tint = NORMAL;
+            }
 
+        }
+        function doPointerDown2() {
+            this.tint = DOWN;
+        }
+        function doPointerUp2() {
+            if (pointerIsOver) {
+                this.tint = OVER;
+            }
+            else {
+                this.tint = NORMAL;
+            }
+
+        }
+
+        function doPointerOver() {
+
+            this.tint = OVER;
+            pointerIsOver = true;
+        }
+        function doPointerOut() {
+
+            this.tint = NORMAL;
+            pointerIsOver = false;
+        }
+
+        function check() {
+            if (counter == word.length) {
+                const win = new PIXI.Text("You Are Winner!");
+                win.x = w / 2 - 120;
+                win.y = 100;
+                app.stage.addChild(win);
+            }
+        }
 
     </script>
-    
+
 </body>
+
 </html>
