@@ -27,13 +27,19 @@
 
         //RANDOM WORDS
 
-        var arrWord = ["OLYA", "SATURN", "EIGHT", "MILK", "PYTHON", "ERDOGAN"];
+        var arrWord = ["OLYA", "SATURN", "EIGHT", "MILK", "PYTHON", "ERDOGAN", "TROPOSPHERE", "ECHO", "RIDER", "CLOCK", "FIVE", "DRY"];
         var questions = ["Olya's mother has five daughters: Alina, Malina, Marta, Kira ... What is the name of the fifth?",
             "what is the sixth planet from the sun?",
             "How many toes do cats have on their hind legs?",
             "What the calf drinks",
             "the most popular programming language in 2020-2021",
-            "President of Turkey"];
+            "President of Turkey",
+            "Lowest layer of the atmosphere",
+            "Who speaks all languages?",
+            "Six legs, two heads, and one tail. What it is?",
+            "What can at the same time: stand and walk,hang and stand, walk and lie?",
+            "One corner was sawed off from a square table. How many corners does he have now?",
+            "What stones are there in the sea?"];
 
         let rand = Math.floor(Math.random() * arrWord.length);
         let n = arrWord[rand];
@@ -46,6 +52,7 @@
 
         app.stage.addChild(questionsText);
         console.log(questionsText);
+
 
         // COUNTER TEXT
 
@@ -80,6 +87,27 @@
         textButton.x = w - 280;
         textButton.y = h - 70;
 
+        //ANSWER
+        let answerText = new PIXI.Text("Show \nanswer");
+
+        let answerButton = new PIXI.Graphics();
+        answerButton.beginFill(NORMAL);
+        answerButton.lineStyle(2, 0xaaaa)
+        answerButton.drawRoundedRect(100, h - 120, 100, 100, 10);
+        answerButton.endFill();
+        answerButton.interactive = true;
+        answerButton.buttonMode = true;
+
+        answerText.x = answerButton.x + 105;
+        answerText.y = h - 100;
+
+
+        answerButton.on("pointerup", doPointerUp3);
+        answerButton.on("pointerdown", doPointerDown3);
+
+        app.stage.addChild(answerButton);
+        app.stage.addChild(answerText);
+
         // CONTAINER FOR BUTTON
 
         let buttonContainer = new PIXI.Container();
@@ -98,9 +126,10 @@
         clickText.y = text.y;
         app.stage.addChild(clickText);
 
-
+        let arr = [];
 
         let word = n;
+
         let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         let letters = [];
         let blocks = [];
@@ -142,7 +171,11 @@
             let letter = wordSet(word[i],
                 w / 2 + i * 70 - word.length / 2 * 70,
                 h / 2 - 100, false);
+            let bool;
+            letter.bool = true;
             letters.push(letter);
+            arr.push(letter);
+
             app.stage.addChild(letter);
         }
 
@@ -166,12 +199,17 @@
 
             for (let i = 0; i < letters.length; i++) {
                 if (letters[i].getChildAt(1).text == letter.getChildAt(1).text) {
-                    letters[i].getChildAt(1).visible = true;
-                    counter++;
-                    text.text = "counter : " + counter;
+                    if (letters[i].bool == true) {
+                        counter++;
+                        letters[i].getChildAt(1).visible = true;
 
-                    console.log(counter);
-                    check();
+                        text.text = "counter : " + counter;
+
+                        console.log(counter);
+                        check();
+                        letters[i].bool = false;
+                    }
+
                 }
             }
         }
@@ -220,6 +258,17 @@
                 win.y = 100;
                 app.stage.addChild(win);
             }
+        }
+        function doPointerDown3() {
+            this.tint = DOWN;
+            for (let i = 0; i < letters.length; i++) {
+                letters[i].getChildAt(1).visible = true;
+                letters[i].bool = false;
+            }
+
+        }
+        function doPointerUp3() {
+            this.tint = NORMAL;
         }
 
     </script>
